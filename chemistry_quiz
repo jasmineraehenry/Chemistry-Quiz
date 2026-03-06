@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Science 10: Chemistry Unit Quiz</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --bg-color: #f8f9fa;
+            --text-color: #333;
+            --correct-color: #27ae60;
+            --incorrect-color: #e74c3c;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        max-width {
+            max-width: 800px;
+            margin: auto;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 10px;
+        }
+        .question-block {
+            margin-bottom: 25px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fafafa;
+        }
+        .question-text {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+        .options-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .options-list li {
+            margin-bottom: 8px;
+        }
+        label {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            padding: 5px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+        label:hover {
+            background-color: #eef2f5;
+        }
+        input[type="radio"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        #results {
+            margin-top: 20px;
+            padding: 20px;
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            border-radius: 5px;
+            display: none;
+        }
+        .correct-answer {
+            color: var(--correct-color);
+            font-weight: bold;
+        }
+        .incorrect-answer {
+            color: var(--incorrect-color);
+            text-decoration: line-through;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Science 10: Chemistry Unit Exam</h1>
+    <p style="text-align:center;">Answer all 25 questions below. Click "Submit" to see your score.</p>
+    
+    <form id="quizForm">
+        <div id="quiz-content"></div>
+        <button type="submit" id="submitBtn">Submit Quiz</button>
+    </form>
+
+    <div id="results"></div>
+</div>
+
+<script>
+    const quizData = [
+        {
+            q: "1. A student sees the 'Exploding Bomb' symbol on a container. According to WHMIS 2015, what is the primary hazard of this substance?",
+            o: ["It can self-react or detonate under certain conditions.", "It will cause other materials to burn more easily.", "It is a gas held under high pressure.", "It causes immediate and severe toxic effects."],
+            a: 0
+        },
+        {
+            q: "2. Which subatomic particle was discovered by J.J. Thomson using a cathode ray tube?",
+            o: ["Proton", "Neutron", "Electron", "Nucleus"],
+            a: 2
+        },
+        {
+            q: "3. In Rutherford's gold foil experiment, why did most alpha particles pass straight through?",
+            o: ["The particles were attracted to the electrons.", "The gold atoms were mostly empty space.", "The gold atoms were arranged in a very thin layer.", "The alpha particles were neutral in charge."],
+            a: 1
+        },
+        {
+            q: "4. An atom has 15 protons, 16 neutrons, and 18 electrons. What is the correct description of this particle?",
+            o: ["A neutral Phosphorus atom.", "A Sulfur ion with a 2- charge.", "A Phosphorus ion with a 3+ charge.", "A Phosphorus ion with a 3- charge."],
+            a: 3
+        },
+        {
+            q: "5. Which group on the periodic table is characterized by having a full valence shell and being generally unreactive?",
+            o: ["Alkali Metals", "Halogens", "Noble Gases", "Alkaline Earth Metals"],
+            a: 2
+        },
+        {
+            q: "6. What is the correct IUPAC name for CuSO₄?",
+            o: ["Copper sulfate", "Copper(I) sulfate", "Copper monosulfate", "Copper(II) sulfate"],
+            a: 3
+        },
+        {
+            q: "7. What is the chemical formula for calcium phosphate?",
+            o: ["CaPO₄", "Ca₃P₂", "Ca₃(PO₄)₂", "Ca₂(PO₄)₃"],
+            a: 2
+        },
+        {
+            q: "8. Which of the following is a molecular (covalent) compound?",
+            o: ["PCl₃", "LiBr", "CaO", "Fe₂O₃"],
+            a: 0
+        },
+        {
+            q: "9. What is the name of the molecular compound S₂F₁₀?",
+            o: ["Sulfur fluoride", "Disulfur decafluoride", "Sulfur(V) fluoride", "Disulfur octafluoride"],
+            a: 1
+        },
+        {
+            q: "10. According to IUPAC rules, how is the compound H₂SO₄(aq) named?",
+            o: ["Hydrogen sulfate", "Sulfurous acid", "Sulfuric acid", "Hydrosulfuric acid"],
+            a: 2
+        },
+        {
+            q: "11. A solution has a pH of 11. How would this solution be classified?",
+            o: ["Strongly acidic", "Neutral", "Basic (alkaline)", "Slightly acidic"],
+            a: 2
+        },
+        {
+            q: "12. Which of the following is a balanced chemical equation for the formation of magnesium oxide?",
+            o: ["Mg + O → MgO", "Mg + O₂ → MgO₂", "2 Mg + O₂ → 2 MgO", "Mg₂ + O₂ → 2 MgO"],
+            a: 2
+        },
+        {
+            q: "13. Identify the reaction type: 2 AgNO₃(aq) + Cu(s) → Cu(NO₃)₂(aq) + 2 Ag(s)",
+            o: ["Formation", "Decomposition", "Single Replacement", "Double Replacement"],
+            a: 2
+        },
+        {
+            q: "14. Identify the reaction type: BaCl₂(aq) + Na₂SO₄(aq) → BaSO₄(s) + 2 NaCl(aq)",
+            o: ["Double Replacement", "Hydrocarbon Combustion", "Single Replacement", "Neutralization"],
+            a: 0
+        },
+        {
+            q: "15. What are the coefficients required to balance: __ C₃H₈ + __ O₂ → __ CO₂ + __ H₂O?",
+            o: ["1, 3, 3, 4", "1, 5, 3, 4", "2, 10, 6, 8", "1, 4, 3, 4"],
+            a: 1
+        },
+        {
+            q: "16. Which of the following is evidence that a chemical change has occurred?",
+            o: ["A solid dissolves in water.", "A liquid freezes into a solid.", "A metal is heated until it glows red.", "A precipitate forms when two liquids are mixed."],
+            a: 3
+        },
+        {
+            q: "17. What is the molar mass of NaOH?",
+            o: ["39.00 g/mol", "23.00 g/mol", "40.00 g/mol", "57.00 g/mol"],
+            a: 2
+        },
+        {
+            q: "18. If you have 2.0 moles of CO₂, what is the mass of the sample?",
+            o: ["44.01 g", "22.00 g", "12.01 g", "88.02 g"],
+            a: 3
+        },
+        {
+            q: "19. Which of these substances is highly soluble in water according to the solubility table?",
+            o: ["PbCl₂", "K₂CO₃", "BaSO₄", "Ca(OH)₂"],
+            a: 1
+        },
+        {
+            q: "20. In a chemical reaction, the total mass of the reactants is 50g. What must be the total mass of the products?",
+            o: ["Less than 50g if a gas is produced.", "More than 50g if it's endothermic.", "Exactly 50g.", "It depends on the reaction type."],
+            a: 2
+        },
+        {
+            q: "21. What is the correct chemical formula for ammonium nitrate?",
+            o: ["NH₃NO₃", "NH₄NO₂", "AlNO₃", "NH₄NO₃"],
+            a: 3
+        },
+        {
+            q: "22. Which of the following describes an exothermic reaction?",
+            o: ["Energy is absorbed from the surroundings.", "The temperature of the surroundings increases.", "The products have more energy than the reactants.", "Ice melting is a common example."],
+            a: 1
+        },
+        {
+            q: "23. How many atoms of oxygen are in the formula 2 Al₂(SO₄)₃?",
+            o: ["12", "8", "24", "7"],
+            a: 2
+        },
+        {
+            q: "24. Which scientist proposed the 'Billiard Ball' model, suggesting atoms were solid, indivisible spheres?",
+            o: ["Ernest Rutherford", "John Dalton", "Neils Bohr", "Democritus"],
+            a: 1
+        },
+        {
+            q: "25. A solution of unknown identity turns blue litmus paper red and conducts electricity. It is likely:",
+            o: ["A base", "An acid", "A molecular compound", "Distilled water"],
+            a: 1
+        }
+    ];
+
+    const quizContent = document.getElementById("quiz-content");
+    const quizForm = document.getElementById("quizForm");
+    const resultsDiv = document.getElementById("results");
+
+    // Render questions
+    quizData.forEach((item, index) => {
+        const questionDiv = document.createElement("div");
+        questionDiv.className = "question-block";
+        questionDiv.id = `qblock-${index}`;
+
+        const questionTitle = document.createElement("div");
+        questionTitle.className = "question-text";
+        questionTitle.innerHTML = item.q;
+        questionDiv.appendChild(questionTitle);
+
+        const optionsList = document.createElement("ul");
+        optionsList.className = "options-list";
+
+        item.o.forEach((option, optIndex) => {
+            const li = document.createElement("li");
+            const label = document.createElement("label");
+            
+            const radio = document.createElement("input");
+            radio.type = "radio";
+            radio.name = `question${index}`;
+            radio.value = optIndex;
+            radio.required = true;
+
+            label.appendChild(radio);
+            label.appendChild(document.createTextNode(option));
+            li.appendChild(label);
+            optionsList.appendChild(li);
+        });
+
+        questionDiv.appendChild(optionsList);
+        quizContent.appendChild(questionDiv);
+    });
+
+    // Handle form submission
+    quizForm.addEventListener("submit", function(e) {
+        e.preventDefault();
+        
+        let score = 0;
+        const formData = new FormData(quizForm);
+
+        quizData.forEach((item, index) => {
+            const selectedValue = parseInt(formData.get(`question${index}`));
+            const block = document.getElementById(`qblock-${index}`);
+            const labels = block.querySelectorAll("label");
+
+            // Reset styles if re-submitting
+            labels.forEach(lbl => {
+                lbl.classList.remove("correct-answer", "incorrect-answer");
+            });
+
+            if (selectedValue === item.a) {
+                score++;
+                labels[selectedValue].classList.add("correct-answer");
+            } else {
+                labels[selectedValue].classList.add("incorrect-answer");
+                labels[item.a].classList.add("correct-answer");
+            }
+        });
+
+        const percentage = Math.round((score / quizData.length) * 100);
+        resultsDiv.style.display = "block";
+        
+        if (percentage >= 80) {
+            resultsDiv.style.backgroundColor = "#d4edda";
+            resultsDiv.style.color = "#155724";
+            resultsDiv.innerHTML = `Excellent work! You scored ${score} out of 25 (${percentage}%).`;
+        } else if (percentage >= 50) {
+            resultsDiv.style.backgroundColor = "#fff3cd";
+            resultsDiv.style.color = "#856404";
+            resultsDiv.innerHTML = `Good effort! You scored ${score} out of 25 (${percentage}%). Keep studying!`;
+        } else {
+            resultsDiv.style.backgroundColor = "#f8d7da";
+            resultsDiv.style.color = "#721c24";
+            resultsDiv.innerHTML = `You scored ${score} out of 25 (${percentage}%). Please review the highlighted answers above.`;
+        }
+        
+        // Scroll to results
+        resultsDiv.scrollIntoView({ behavior: "smooth" });
+    });
+</script>
+
+</body>
+</html>
