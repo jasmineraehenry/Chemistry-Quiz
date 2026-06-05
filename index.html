@@ -3,337 +3,527 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Science 10: Chemistry Unit Quiz</title>
+    <title>Science 10: Chemistry Unit Exam Review</title>
     <style>
-        :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #3498db;
-            --bg-color: #f8f9fa;
-            --text-color: #333;
-            --correct-color: #27ae60;
-            --incorrect-color: #e74c3c;
-        }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            line-height: 1.6;
+            background-color: #f9f9f9;
+            color: #000000; /* Text is strictly black */
             margin: 0;
             padding: 20px;
+            display: flex;
+            justify-content: center;
         }
-        max-width {
-            max-width: 800px;
-            margin: auto;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: #fff;
+        .quiz-container {
+            background-color: #ffffff;
+            max-width: 650px;
+            width: 100%;
             padding: 30px;
             border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
         }
         h1 {
-            color: var(--primary-color);
+            font-size: 24px;
+            margin-bottom: 5px;
             text-align: center;
-            border-bottom: 2px solid var(--secondary-color);
-            padding-bottom: 10px;
         }
-        .question-block {
+        .progress {
+            font-size: 14px;
+            color: #555555;
+            text-align: center;
             margin-bottom: 25px;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            background-color: #fafafa;
         }
         .question-text {
-            font-weight: bold;
-            font-size: 1.1em;
-            margin-bottom: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            line-height: 1.4;
         }
-        .options-list {
-            list-style-type: none;
-            padding: 0;
-        }
-        .options-list li {
-            margin-bottom: 8px;
-        }
-        label {
-            cursor: pointer;
+        .options-container {
             display: flex;
-            align-items: center;
-            padding: 5px;
-            border-radius: 4px;
-            transition: background-color 0.2s;
+            flex-direction: column;
+            gap: 12px;
         }
-        label:hover {
-            background-color: #eef2f5;
-        }
-        input[type="radio"] {
-            margin-right: 10px;
-            transform: scale(1.2);
-        }
-        button {
-            display: block;
-            width: 100%;
-            padding: 15px;
-            background-color: var(--secondary-color);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 1.2em;
+        .option-btn {
+            background-color: #ffffff;
+            color: #000000;
+            border: 2px solid #333333;
+            padding: 14px 20px;
+            font-size: 16px;
+            border-radius: 6px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            text-align: left;
+            transition: all 0.2s ease;
         }
-        button:hover {
-            background-color: #2980b9;
+        .option-btn:hover:not(:disabled) {
+            background-color: #f0f0f0;
         }
-        #results {
-            margin-top: 20px;
-            padding: 20px;
-            text-align: center;
-            font-size: 1.5em;
+        .option-btn:disabled {
+            cursor: not-allowed;
+        }
+        /* Color states for selected choices */
+        .option-btn.correct {
+            background-color: #d4edda !important;
+            border-color: #c3e6cb !important;
             font-weight: bold;
-            border-radius: 5px;
+        }
+        .option-btn.incorrect {
+            background-color: #f8d7da !important;
+            border-color: #f5c6cb !important;
+        }
+        .feedback-box {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            background-color: #f1f3f5;
+            border-left: 5px solid #333333;
+            display: none;
+            line-height: 1.5;
+        }
+        .feedback-box strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .action-container {
+            margin-top: 25px;
+            display: flex;
+            justify-content: flex-end;
+        }
+        .next-btn {
+            background-color: #000000;
+            color: #ffffff;
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
             display: none;
         }
-        .correct-answer {
-            color: var(--correct-color);
-            font-weight: bold;
+        .next-btn:hover {
+            background-color: #333333;
         }
-        .incorrect-answer {
-            color: var(--incorrect-color);
-            text-decoration: line-through;
+        /* Results Section */
+        .results-section {
+            display: none;
+            text-align: center;
+        }
+        .score-display {
+            font-size: 48px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .mistakes-container {
+            text-align: left;
+            margin-top: 30px;
+            border-top: 2px solid #000000;
+            padding-top: 20px;
+        }
+        .mistake-item {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #cccccc;
+        }
+        .mistake-q {
+            font-weight: bold;
+            margin-bottom: 5px;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>Science 10: Chemistry Unit Exam</h1>
-    <p style="text-align:center;">Answer all 25 questions below. Click "Submit" to see your score.</p>
-    
-    <form id="quizForm">
-        <div id="quiz-content"></div>
-        <button type="submit" id="submitBtn">Submit Quiz</button>
-    </form>
+<div class="quiz-container">
+    <div id="quiz-window">
+        <h1 id="quiz-title">Chemistry Unit Exam Review</h1>
+        <div class="progress" id="progress-text">Question 1 of 25</div>
+        <div class="question-text" id="question-text">Loading question...</div>
+        <div class="options-container" id="options-container"></div>
+        <div class="feedback-box" id="feedback-box"></div>
+        <div class="action-container">
+            <button class="next-btn" id="next-btn" onclick="loadNextQuestion()">Next Question &rarr;</button>
+        </div>
+    </div>
 
-    <div id="results"></div>
+    <div id="results-window" class="results-section">
+        <h1>Review Completed!</h1>
+        <p>Your Final Score:</p>
+        <div class="score-display" id="score-display">0 / 25</div>
+        <p id="score-commentary"></p>
+        
+        <div class="mistakes-container" id="mistakes-container">
+            <h3>Review of Questions Answered Incorrectly:</h3>
+            <div id="mistakes-list"></div>
+        </div>
+    </div>
 </div>
 
 <script>
+    // The compiled 25-question array pairing formulas, concepts, and your updated additions
     const quizData = [
         {
-            q: "1. A student sees the 'Exploding Bomb' symbol on a container. According to WHMIS 2015, what is the primary hazard of this substance?",
-            o: ["It can self-react or detonate under certain conditions.", "It will cause other materials to burn more easily.", "It is a gas held under high pressure.", "It causes immediate and severe toxic effects."],
-            a: 0
+            q: "A student sees the 'Exploding Bomb' symbol on a container. According to WHMIS 2015, what is the primary hazard of this substance?",
+            options: [
+                { text: "It can self-react or detonate under certain conditions.", correct: true, rationale: "The exploding bomb pictogram designates materials that are unstable explosives, organic peroxides, or highly self-reactive substances." },
+                { text: "It will cause other materials to burn more easily.", correct: false, rationale: "Materials that cause or contribute to combustion are oxidizing hazards, marked by a 'flame over circle'." },
+                { text: "It is a gas held under high pressure.", correct: false, rationale: "Gases under pressure use a gas cylinder icon, highlighting physical storage leak risks." },
+                { text: "It causes immediate and severe toxic effects.", correct: false, rationale: "Acute or fatal systemic toxicity is represented strictly by the skull and crossbones pictogram." }
+            ],
+            hint: "Think about what an explosion represents physically: a sudden, violent release of energy from the material itself."
         },
         {
-            q: "2. Which subatomic particle was discovered by J.J. Thomson using a cathode ray tube?",
-            o: ["Proton", "Neutron", "Electron", "Nucleus"],
-            a: 2
+            q: "Which subatomic particle was discovered by J.J. Thomson using a cathode ray tube?",
+            options: [
+                { text: "Proton", correct: false, rationale: "Protons are positively charged structural units discovered via canal rays and gold foil trials." },
+                { text: "Neutron", correct: false, rationale: "The neutron is a neutral structural mass tracked down much later by James Chadwick in 1932." },
+                { text: "Electron", correct: true, rationale: "Thomson showed cathode ray deflection away from native negative fields, isolating low-mass negative units called electrons." },
+                { text: "Nucleus", correct: false, rationale: "The dense central nuclear region was mapped out by Ernest Rutherford via gold foil tracking." }
+            ],
+            hint: "Consider which particle has a negative charge and was easily manipulated by electric and magnetic fields outside the nucleus."
         },
         {
-            q: "3. In Rutherford's gold foil experiment, why did most alpha particles pass straight through?",
-            o: ["The particles were attracted to the electrons.", "The gold atoms were mostly empty space.", "The gold atoms were arranged in a very thin layer.", "The alpha particles were neutral in charge."],
-            a: 1
+            q: "In Rutherford's gold foil experiment, why did most alpha particles pass straight through?",
+            options: [
+                { text: "The particles were attracted to the electrons.", correct: false, rationale: "Electrons lack the necessary mass structural properties to shift heavy alpha rays." },
+                { text: "The gold atoms were mostly empty space.", correct: true, rationale: "Because the tiny positive nucleus occupies very little overall volume, incoming alpha streams encounter no physical barrier." },
+                { text: "The gold atoms were arranged in a very thin layer.", correct: false, rationale: "Even within thin structures, particles strike targets unless those individual atoms are internally hollow frameworks." },
+                { text: "The alpha particles were neutral in charge.", correct: false, rationale: "Alpha elements are fast-moving helium nuclei carrying a baseline net positive charge of 2+." }
+            ],
+            hint: "If a ray passes clean through a target block without structural deviation, consider what that means for the internal material spacing."
         },
         {
-            q: "4. An atom has 15 protons, 16 neutrons, and 18 electrons. What is the correct description of this particle?",
-            o: ["A neutral Phosphorus atom.", "A Sulfur ion with a 2- charge.", "A Phosphorus ion with a 3+ charge.", "A Phosphorus ion with a 3- charge."],
-            a: 3
+            q: "An atom has 15 protons, 16 neutrons, and 18 electrons. What is the correct description of this particle?",
+            options: [
+                { text: "A neutral Phosphorus atom.", correct: false, rationale: "Neutral phosphorus structures demand an even 15 electrons to match native protons." },
+                { text: "A Sulfur ion with a 2- charge.", correct: false, rationale: "The element sulfur is structurally defined by possessing exactly 16 protons." },
+                { text: "A Phosphorus ion with a 3+ charge.", correct: false, rationale: "A 3+ oxidation state indicates electron loss, leaving only 12 active orbiting units." },
+                { text: "A Phosphorus ion with a 3- charge.", correct: true, rationale: "Atomic number 15 identifies phosphorus, and a surplus of 3 extra negative electrons provides a net charge of 3-." }
+            ],
+            hint: "Identify the element using the proton count first, then calculate the charge by comparing protons and electrons."
         },
         {
-            q: "5. Which group on the periodic table is characterized by having a full valence shell and being generally unreactive?",
-            o: ["Alkali Metals", "Halogens", "Noble Gases", "Alkaline Earth Metals"],
-            a: 2
+            q: "Which group on the periodic table is characterized by having a full valence shell and being generally unreactive?",
+            options: [
+                { text: "Alkali Metals", correct: false, rationale: "Alkali elements sit in Group 1, holding a lone valence electron that triggers aggressive reactivity." },
+                { text: "Halogens", correct: false, rationale: "Halogens sit in Group 17, and react readily to acquire one missing electron to fill their layer." },
+                { text: "Noble Gases", correct: true, rationale: "Noble gases sit in Group 18 with structurally complete outer shells, yielding excellent thermodynamic stability." },
+                { text: "Alkaline Earth Metals", correct: false, rationale: "Alkaline earth structures are Group 2 metallic elements carrying two outer valence electrons." }
+            ],
+            hint: "Think of the far-right column of the periodic table, where elements exist stably on their own without needing to bond."
         },
         {
-            q: "6. What is the correct IUPAC name for CuSO₄?",
-            o: ["Copper sulfate", "Copper(I) sulfate", "Copper monosulfate", "Copper(II) sulfate"],
-            a: 3
+            q: "What is the correct IUPAC name for CuSO4?",
+            options: [
+                { text: "Copper sulfate", correct: false, rationale: "This missing name lacks a explicit Roman numeral indicating the metal cation state." },
+                { text: "Copper(I) sulfate", correct: false, rationale: "Copper(I) variants yield a net compound structure pattern written out as Cu2SO4." },
+                { text: "Copper monosulfate", correct: false, rationale: "Covalent prefixes like 'mono-' are not permitted when naming standard ionic metallic matrices." },
+                { text: "Copper(II) sulfate", correct: true, rationale: "The polyatomic sulfate structural unit demands a fixed 2- balance, forcing the solitary copper cation to take a 2+ value." }
+            ],
+            hint: "Determine the standard net negative charge of the polyatomic sulfate ion, then balance it with copper's oxidation state."
         },
         {
-            q: "7. What is the chemical formula for calcium phosphate?",
-            o: ["CaPO₄", "Ca₃P₂", "Ca₃(PO₄)₂", "Ca₂(PO₄)₃"],
-            a: 2
+            q: "What is the chemical formula for calcium phosphate?",
+            options: [
+                { text: "CaPO4", correct: false, rationale: "This setup implies a 1:1 ratio, failing to clear out charges between calcium (2+) and phosphate (3-)." },
+                { text: "Ca3P2", correct: false, rationale: "This builds calcium phosphide, a simple binary variant lacking oxygen-heavy polyatomic assemblies." },
+                { text: "Ca3(PO4)2", correct: true, rationale: "Three calcium units offer a total positive 6+ charge, neutralizing the negative 6- scale supplied by two phosphate units." },
+                { text: "Ca2(PO4)3", correct: false, rationale: "This yields a positive 4+ charge against a negative 9- environment, leaving the system highly unbalanced." }
+            ],
+            hint: "Use the crossover method for calcium (2+) and the polyatomic phosphate ion (3-)."
         },
         {
-            q: "8. Which of the following is a molecular (covalent) compound?",
-            o: ["PCl₃", "LiBr", "CaO", "Fe₂O₃"],
-            a: 0
+            q: "Which of the following is a molecular (covalent) compound?",
+            options: [
+                { text: "PCl3", correct: true, rationale: "Phosphorus and chlorine are both non-metals, which share outer electrons to secure covalent bounds." },
+                { text: "LiBr", correct: false, rationale: "Lithium acts as an alkali metal interacting with bromine via ionic electron transmission structures." },
+                { text: "CaO", correct: false, rationale: "Calcium represents a metal bonding with oxygen, assembling a classic binary ionic matrix." },
+                { text: "Fe2O3", correct: false, rationale: "This molecule bonds a transition multivalent metal with a non-metal, making it completely ionic." }
+            ],
+            hint: "Look for a compound composed entirely of non-metal elements."
         },
         {
-            q: "9. What is the name of the molecular compound S₂F₁₀?",
-            o: ["Sulfur fluoride", "Disulfur decafluoride", "Sulfur(V) fluoride", "Disulfur octafluoride"],
-            a: 1
+            q: "What is the name of the molecular compound S2F10?",
+            options: [
+                { text: "Sulfur fluoride", correct: false, rationale: "This basic nomenclature omits essential structural numeric prefixes required for molecular paths." },
+                { text: "Disulfur decafluoride", correct: true, rationale: "The numeric prefix 'di-' specifies two sulfur sites, while 'deca-' defines ten distinct fluorine atoms." },
+                { text: "Sulfur(V) fluoride", correct: false, rationale: "Roman states belong strictly to ionic transition metal structures, not standard molecular setups." },
+                { text: "Disulfur octafluoride", correct: false, rationale: "The prefix 'octa-' relates to eight sites, missing the ten structural atoms indicated in the formula." }
+            ],
+            hint: "Recall the Greek prefixes used in molecular naming for the quantities 'two' and 'ten'."
         },
         {
-            q: "10. According to IUPAC rules, how is the compound H₂SO₄(aq) named?",
-            o: ["Hydrogen sulfate", "Sulfurous acid", "Sulfuric acid", "Hydrosulfuric acid"],
-            a: 2
+            q: "According to IUPAC rules, how is the compound H2SO4(aq) named?",
+            options: [
+                { text: "Hydrogen sulfate", correct: false, rationale: "This classifies the substance as a pure isolated compound rather than its dissolved aqueous acid form." },
+                { text: "Sulfurous acid", correct: false, rationale: "Sulfurous acid corresponds directly to H2SO3(aq), built out of the lower sulfite structural ion." },
+                { text: "Sulfuric acid", correct: true, rationale: "Aqueous oxoacids transform the standard '-ate' polyatomic suffix (sulfate) into a clean '-ic acid' pattern." },
+                { text: "Hydrosulfuric acid", correct: false, rationale: "The 'hydro-' prefix is reserved for simple binary acids that contain no oxygen, like H2S(aq)." }
+            ],
+            hint: "The polyatomic ion involved here is sulfate. Remember the mnemonic rule: 'Ate' something 'ic'y."
         },
         {
-            q: "11. A solution has a pH of 11. How would this solution be classified?",
-            o: ["Strongly acidic", "Neutral", "Basic (alkaline)", "Slightly acidic"],
-            a: 2
+            q: "A solution has a pH of 11. How would this solution be classified?",
+            options: [
+                { text: "Strongly acidic", correct: false, rationale: "Acidic aqueous mixtures maintain pH readings restricted strictly below 7." },
+                { text: "Neutral", correct: false, rationale: "Pure water solutions at equilibrium conditions present a pH value resting exactly at 7." },
+                { text: "Basic (alkaline)", correct: true, rationale: "The standard pH metric spreads from 0 to 14, where assignments higher than 7 identify basic features." },
+                { text: "Slightly acidic", correct: false, rationale: "Slightly acidic solutions scale just below midpoint values, sitting roughly around 5 or 6." }
+            ],
+            hint: "Recall where values above 7 sit on the 0–14 pH scale."
         },
         {
-            q: "12. Which of the following is a balanced chemical equation for the formation of magnesium oxide?",
-            o: ["Mg + O → MgO", "Mg + O₂ → MgO₂", "2 Mg + O₂ → 2 MgO", "Mg₂ + O₂ → 2 MgO"],
-            a: 2
+            q: "Which of the following is a balanced chemical equation for the formation of magnesium oxide?",
+            options: [
+                { text: "Mg + O → MgO", correct: false, rationale: "Elemental oxygen occurs naturally as a paired diatomic gas molecule (O2), not a lone reactive atom." },
+                { text: "Mg + O2 → MgO2", correct: false, rationale: "The target structure for magnesium oxide is fixed as MgO based on localized ion valences." },
+                { text: "2 Mg + O2 → 2 MgO", correct: true, rationale: "This layout honors diatomic oxygen gases while supplying matching counts of metal and nonmetal sites on both lines." },
+                { text: "Mg2 + O2 → 2 MgO", correct: false, rationale: "Pure magnesium behaves as a metallic element and cannot be written in a native diatomic molecular format (Mg2)." }
+            ],
+            hint: "Oxygen must be written as O2, and the balanced product must contain standard MgO ionic units."
         },
         {
-            q: "13. Identify the reaction type: 2 AgNO₃(aq) + Cu(s) → Cu(NO₃)₂(aq) + 2 Ag(s)",
-            o: ["Formation", "Decomposition", "Single Replacement", "Double Replacement"],
-            a: 2
+            q: "Identify the reaction type: 2 AgNO3(aq) + Cu(s) → Cu(NO3)2(aq) + 2 Ag(s)",
+            options: [
+                { text: "Formation", correct: false, rationale: "Formation scripts combine unlinked base elements directly into a single unified compound structure." },
+                { text: "Decomposition", correct: false, rationale: "Decomposition reactions break a complex reactant down into multiple basic products." },
+                { text: "Single Replacement", correct: true, rationale: "A solitary metal element (copper) replaces a metallic ion (silver) inside a solution compound." },
+                { text: "Double Replacement", correct: false, rationale: "Double replacement events necessitate two complete compound components swapping ions concurrently." }
+            ],
+            hint: "Notice that an active individual element 'kicks out' and replaces an ion from a compound."
         },
         {
-            q: "14. Identify the reaction type: BaCl₂(aq) + Na₂SO₄(aq) → BaSO₄(s) + 2 NaCl(aq)",
-            o: ["Double Replacement", "Hydrocarbon Combustion", "Single Replacement", "Neutralization"],
-            a: 0
+            q: "Identify the reaction type: BaCl2(aq) + Na2SO4(aq) → BaSO4(s) + 2 NaCl(aq)",
+            options: [
+                { text: "Double Replacement", correct: true, rationale: "Two ionic liquid mixtures trade ion assignments, producing a partner swap dynamic." },
+                { text: "Hydrocarbon Combustion", correct: false, rationale: "Hydrocarbon combustion reactions require an organic fuel burning alongside active oxygen gas." },
+                { text: "Single Replacement", correct: false, rationale: "Single replacement environments always showcase an uncombined solitary element along the reactant side." },
+                { text: "Neutralization", correct: false, rationale: "Neutralization is a specialized double replacement between an acid and base designed to assemble water." }
+            ],
+            hint: "Observe how the two starting compounds swap atomic partners with each other."
         },
         {
-            q: "15. What are the coefficients required to balance: __ C₃H₈ + __ O₂ → __ CO₂ + __ H₂O?",
-            o: ["1, 3, 3, 4", "1, 5, 3, 4", "2, 10, 6, 8", "1, 4, 3, 4"],
-            a: 1
+            q: "What are the coefficients required to balance the following chemical equation?\n__ C3H8 + __ O2 → __ CO2 + __ H2O",
+            options: [
+                { text: "1, 3, 3, 4", correct: false, rationale: "Three oxygen gas molecules supply only 6 atoms, falling short of the 10 oxygen sites demanded by the products." },
+                { text: "1, 5, 3, 4", correct: true, rationale: "One propane breaks into 3 carbon paths (3 CO2) and 8 hydrogen paths (4 H2O). This total requires 10 oxygen atoms, satisfied by 5 O2." },
+                { text: "2, 10, 6, 8", correct: false, rationale: "While proportional, balancing scripts strictly mandate reduction down to the lowest possible whole-number ratios." },
+                { text: "1, 4, 3, 4", correct: false, rationale: "Four oxygen molecules supply 8 atoms, leaving the oxygen element count structurally unbalanced." }
+            ],
+            hint: "Balance the carbons first, followed by the hydrogens, and tally up the total product oxygens last."
         },
         {
-            q: "16. Which of the following is evidence that a chemical change has occurred?",
-            o: ["A solid dissolves in water.", "A liquid freezes into a solid.", "A metal is heated until it glows red.", "A precipitate forms when two liquids are mixed."],
-            a: 3
+            q: "Which of the following is evidence that a chemical change has occurred?",
+            options: [
+                { text: "A solid dissolves in water.", correct: false, rationale: "Dissolving constitutes a physical matrix change; the distinct fundamental identity of the material is preserved." },
+                { text: "A liquid freezes into a solid.", correct: false, rationale: "Freezing marks a physical phase transition governed strictly by heat and molecular velocity." },
+                { text: "A metal is heated until it glows red.", correct: false, rationale: "Thermal radiation due to energy input represents an atomic physical output, not chemical recombination." },
+                { text: "A precipitate forms when two liquids are mixed.", correct: true, rationale: "The spontaneous presentation of an insoluble solid out of liquids shows a completely new compound has formed." },
+            ],
+            hint: "Look for an occurrence where entirely new atomic arrangements create a brand-new substance with unique physical attributes."
         },
         {
-            q: "17. What is the molar mass of NaOH?",
-            o: ["39.00 g/mol", "23.00 g/mol", "40.00 g/mol", "57.00 g/mol"],
-            a: 2
+            q: "What is the molar mass of NaOH?",
+            options: [
+                { text: "39.00 g/mol", correct: false, rationale: "This total mirrors the atomic weight of potassium rather than the combined components of sodium hydroxide." },
+                { text: "23.00 g/mol", correct: false, rationale: "This reflects only the standalone mass weight contribution of the isolated sodium atom site." },
+                { text: "40.00 g/mol", correct: true, rationale: "Summing standard table masses for sodium (22.99), oxygen (16.00), and hydrogen (1.01) matches roughly 40.00 g/mol." },
+                { text: "57.00 g/mol", correct: false, rationale: "This total significantly overshoots the real physical mass values tracking inside one mole of NaOH." }
+            ],
+            hint: "Look up the atomic masses of Na, O, and H on your periodic table and add them together."
         },
         {
-            q: "18. If you have 2.0 moles of CO₂, what is the mass of the sample?",
-            o: ["44.01 g", "22.00 g", "12.01 g", "88.02 g"],
-            a: 3
+            q: "If you have 2.0 moles of CO2, what is the mass of the sample?",
+            options: [
+                { text: "44.01 g", correct: false, rationale: "This value covers the mass structural profile of exactly 1.0 mole of carbon dioxide gas." },
+                { text: "22.00 g", correct: false, rationale: "This quantity marks a half-mole segment of gas instead of the 2.0 moles specified." },
+                { text: "12.01 g", correct: false, rationale: "This represents solely the isolated mass weight assignment of carbon atoms on the table." },
+                { text: "88.02 g", correct: true, rationale: "The molar mass of CO2 equates to 44.01 g/mol. Multiplying this base factor by 2.0 moles tracks out to 88.02 g." }
+            ],
+            hint: "Calculate the molar mass of one mole of CO2 first, then double it."
         },
         {
-            q: "19. Which of these substances is highly soluble in water according to the solubility table?",
-            o: ["PbCl₂", "K₂CO₃", "BaSO₄", "Ca(OH)₂"],
-            a: 1
+            q: "Which of these substances is highly soluble in water according to standard solubility rules?",
+            options: [
+                { text: "PbCl2", correct: false, rationale: "Lead(II) chloride represents a prominent exception to chloride solubility, locking up into an insoluble precipitate." },
+                { text: "K2CO3", correct: true, rationale: "Salts housing Group 1 alkali metal cations like potassium (K+) are universally highly soluble across aqueous environments." },
+                { text: "BaSO4", correct: false, rationale: "Barium sulfate remains highly insoluble and is routinely deployed as a contrast matrix because it won't dissolve." },
+                { text: "Ca(OH)2", correct: false, rationale: "Calcium hydroxide showcases low baseline solubility behaviors within ambient water containers." }
+            ],
+            hint: "Look for an alkali metal cation from Group 1, which generally guarantees high solubility regardless of the anion paired with it."
         },
         {
-            q: "20. In a chemical reaction, the total mass of the reactants is 50g. What must be the total mass of the products?",
-            o: ["Less than 50g if a gas is produced.", "More than 50g if it's endothermic.", "Exactly 50g.", "It depends on the reaction type."],
-            a: 2
+            q: "In a chemical reaction, the total mass of the reactants is 50g. What must be the total mass of the products?",
+            options: [
+                { text: "Less than 50g if a gas is produced.", correct: false, rationale: "Gas venting from an open beaker drops the *measured* balance weight, but generated absolute mass is unaltered." },
+                { text: "More than 50g if it's endothermic.", correct: false, rationale: "Energy absorbed or shed does not transform or synthesize new net atomic mass paths out of nothing." },
+                { text: "Exactly 50g.", correct: true, rationale: "The Law of Conservation of Mass rules that elements are neither generated nor destroyed in reactions." },
+                { text: "It depends on the reaction type.", correct: false, rationale: "Mass conservation rules structurally regulate all standard chemical transformations without exception." }
+            ],
+            hint: "Remember the fundamental law stating that atoms cannot be created or destroyed during a chemical reaction."
         },
         {
-            q: "21. What is the correct chemical formula for ammonium nitrate?",
-            o: ["NH₃NO₃", "NH₄NO₂", "AlNO₃", "NH₄NO₃"],
-            a: 3
+            q: "What is the correct chemical formula for ammonium nitrate?",
+            options: [
+                { text: "NH3NO3", correct: false, rationale: "NH3 states the neutral molecule ammonia gas, missing the true polyatomic ammonium ion charge state (NH4+)." },
+                { text: "NH4NO2", correct: false, rationale: "This forms ammonium nitrite, carrying one less oxygen atom than the true targeted nitrate framework." },
+                { text: "AlNO3", correct: false, rationale: "This framework introduces aluminum tracking codes instead of the requested ammonium polyatomic unit." },
+                { text: "NH4NO3", correct: true, rationale: "Ammonium acts as NH4+ and nitrate acts as NO3-. Their equal 1:1 charge profile results in a clean un-subscripted match." }
+            ],
+            hint: "Combine the polyatomic formula for ammonium (1+) with the polyatomic formula for nitrate (1-)."
         },
         {
-            q: "22. Which of the following describes an exothermic reaction?",
-            o: ["Energy is absorbed from the surroundings.", "The temperature of the surroundings increases.", "The products have more energy than the reactants.", "Ice melting is a common example."],
-            a: 1
+            q: "Which of the following describes an exothermic reaction?",
+            options: [
+                { text: "Energy is absorbed from the surroundings.", correct: false, rationale: "Sucking in heat vectors from external environments describes an endothermic state." },
+                { text: "The temperature of the surroundings increases.", correct: true, rationale: "Exothermic shifts unlock chemical potential paths, dumping thermal energy out to elevate surrounding temperatures." },
+                { text: "The products have more energy than the reactants.", correct: false, rationale: "If product energy scales higher, power was captured from outside, proving an endothermic profile." },
+                { text: "Ice melting is a common example.", correct: false, rationale: "Ice must trap environmental heat vectors to sever structural lattices, defining melting as endothermic." }
+            ],
+            hint: "Look for the prefix 'exo-' meaning 'external' or 'to exit'. Where is the heat going?"
         },
         {
-            q: "23. How many atoms of oxygen are in the formula 2 Al₂(SO₄)₃?",
-            o: ["12", "8", "24", "7"],
-            a: 2
+            q: "How many atoms of oxygen are in the formula 2 Al2(SO4)3?",
+            options: [
+                { text: "12", correct: false, rationale: "One unit of Al2(SO4)3 houses 12 oxygen items, but this view completely skips the front multiplier." },
+                { text: "8", correct: false, rationale: "This value comes from an incorrect mathematical processing of subscripts and multipliers." },
+                { text: "24", correct: true, rationale: "One core unit holds 12 oxygens (4 x 3). The front coefficient of 2 doubles this scale, yielding 24 oxygen atoms." },
+                { text: "7", correct: false, rationale: "This occurs if a user adds chemical subscripts together instead of multiplying them appropriately." }
+            ],
+            hint: "Multiply the inner oxygen subscript by the outer bracket subscript, then multiply that result by the main front coefficient."
         },
         {
-            q: "24. Which scientist proposed the 'Billiard Ball' model, suggesting atoms were solid, indivisible spheres?",
-            o: ["Ernest Rutherford", "John Dalton", "Neils Bohr", "Democritus"],
-            a: 1
+            q: "Which scientist proposed the 'Billiard Ball' model, suggesting atoms were solid, indivisible spheres?",
+            options: [
+                { text: "Ernest Rutherford", correct: false, rationale: "Rutherford isolated the nuclear center, breaking down the historic hard sphere concept." },
+                { text: "John Dalton", correct: true, rationale: "Dalton constructed an early atomic theory visualizing atoms as solid, unbreakable spheres akin to billiard balls." },
+                { text: "Neils Bohr", correct: false, rationale: "Bohr constructed complex shell pathways detailing quantized electronic orbital fields." },
+                { text: "Democritus", correct: false, rationale: "Democritus drafted the raw philosophical idea of atoms but lacked an empirical scientific testing framework." }
+            ],
+            hint: "This English chemist formulated his atomic theory in the early 1800s using mass ratios."
         },
         {
-            q: "25. A solution of unknown identity turns blue litmus paper red and conducts electricity. It is likely:",
-            o: ["A base", "An acid", "A molecular compound", "Distilled water"],
-            a: 1
+            q: "A solution of unknown identity turns blue litmus paper red and conducts electricity. It is likely:",
+            options: [
+                { text: "A base", correct: false, rationale: "Basic materials flip red litmus paper to a blue profile and produce slippery safe handling sensations." },
+                { text: "An acid", correct: true, rationale: "Acids switch blue indicators to a red hue and liberate electrolyte ions capable of carrying electrical current." },
+                { text: "A molecular compound", correct: false, rationale: "Most molecular materials fail to generate conductive ions when dissolved in water grids." },
+                { text: "Distilled water", correct: false, rationale: "Pure water tracks as a neutral substance with poor inherent electrical charge carrying properties." }
+            ],
+            hint: "Consider which class of chemical compounds alters indicators to red and releases ions to behave as an electrolyte."
         }
     ];
 
-    const quizContent = document.getElementById("quiz-content");
-    const quizForm = document.getElementById("quizForm");
-    const resultsDiv = document.getElementById("results");
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let userMistakes = [];
 
-    // Render questions
-    quizData.forEach((item, index) => {
-        const questionDiv = document.createElement("div");
-        questionDiv.className = "question-block";
-        questionDiv.id = `qblock-${index}`;
-
-        const questionTitle = document.createElement("div");
-        questionTitle.className = "question-text";
-        questionTitle.innerHTML = item.q;
-        questionDiv.appendChild(questionTitle);
-
-        const optionsList = document.createElement("ul");
-        optionsList.className = "options-list";
-
-        item.o.forEach((option, optIndex) => {
-            const li = document.createElement("li");
-            const label = document.createElement("label");
-            
-            const radio = document.createElement("input");
-            radio.type = "radio";
-            radio.name = `question${index}`;
-            radio.value = optIndex;
-            radio.required = true;
-
-            label.appendChild(radio);
-            label.appendChild(document.createTextNode(option));
-            li.appendChild(label);
-            optionsList.appendChild(li);
-        });
-
-        questionDiv.appendChild(optionsList);
-        quizContent.appendChild(questionDiv);
-    });
-
-    // Handle form submission
-    quizForm.addEventListener("submit", function(e) {
-        e.preventDefault();
+    function loadQuestion() {
+        // Reset interactive elements
+        document.getElementById('feedback-box').style.display = 'none';
+        document.getElementById('next-btn').style.display = 'none';
         
-        let score = 0;
-        const formData = new FormData(quizForm);
+        const currentQuestion = quizData[currentQuestionIndex];
+        
+        // Update display text
+        document.getElementById('progress-text').innerText = `Question ${currentQuestionIndex + 1} of ${quizData.length}`;
+        document.getElementById('question-text').innerText = currentQuestion.q;
+        
+        const optionsContainer = document.getElementById('options-container');
+        optionsContainer.innerHTML = '';
+        
+        // Generate choice inputs
+        currentQuestion.options.forEach((option, index) => {
+            const button = document.createElement('button');
+            button.className = 'option-btn';
+            button.innerText = option.text;
+            button.onclick = () => handleOptionSelection(button, option);
+            optionsContainer.appendChild(button);
+        });
+    }
 
-        quizData.forEach((item, index) => {
-            const selectedValue = parseInt(formData.get(`question${index}`));
-            const block = document.getElementById(`qblock-${index}`);
-            const labels = block.querySelectorAll("label");
-
-            // Reset styles if re-submitting
-            labels.forEach(lbl => {
-                lbl.classList.remove("correct-answer", "incorrect-answer");
+    function handleOptionSelection(selectedButton, selectedOption) {
+        const currentQuestion = quizData[currentQuestionIndex];
+        const buttons = document.querySelectorAll('.option-btn');
+        
+        // Lock out alternate inputs
+        buttons.forEach(btn => btn.disabled = true);
+        
+        const feedbackBox = document.getElementById('feedback-box');
+        feedbackBox.style.display = 'block';
+        
+        if (selectedOption.correct) {
+            selectedButton.classList.add('correct');
+            score++;
+            feedbackBox.innerHTML = `<strong>Correct!</strong> ${selectedOption.rationale}`;
+        } else {
+            selectedButton.classList.add('incorrect');
+            feedbackBox.innerHTML = `<strong>Incorrect.</strong> ${selectedOption.rationale}<br><br><em>Hint Review:</em> ${currentQuestion.hint}`;
+            
+            // Highlight the proper solution paths safely
+            buttons.forEach((btn, idx) => {
+                if (currentQuestion.options[idx].correct) {
+                    btn.classList.add('correct');
+                }
             });
 
-            if (selectedValue === item.a) {
-                score++;
-                labels[selectedValue].classList.add("correct-answer");
-            } else {
-                labels[selectedValue].classList.add("incorrect-answer");
-                labels[item.a].classList.add("correct-answer");
-            }
-        });
-
-        const percentage = Math.round((score / quizData.length) * 100);
-        resultsDiv.style.display = "block";
-        
-        if (percentage >= 80) {
-            resultsDiv.style.backgroundColor = "#d4edda";
-            resultsDiv.style.color = "#155724";
-            resultsDiv.innerHTML = `Excellent work! You scored ${score} out of 25 (${percentage}%).`;
-        } else if (percentage >= 50) {
-            resultsDiv.style.backgroundColor = "#fff3cd";
-            resultsDiv.style.color = "#856404";
-            resultsDiv.innerHTML = `Good effort! You scored ${score} out of 25 (${percentage}%). Keep studying!`;
-        } else {
-            resultsDiv.style.backgroundColor = "#f8d7da";
-            resultsDiv.style.color = "#721c24";
-            resultsDiv.innerHTML = `You scored ${score} out of 25 (${percentage}%). Please review the highlighted answers above.`;
+            // Store contextual feedback properties for review panel
+            userMistakes.push({
+                question: currentQuestion.q,
+                yourChoice: selectedOption.text,
+                correctChoice: currentQuestion.options.find(o => o.correct).text,
+                remediation: selectedOption.rationale
+            });
         }
         
-        // Scroll to results
-        resultsDiv.scrollIntoView({ behavior: "smooth" });
-    });
+        document.getElementById('next-btn').style.display = 'block';
+    }
+
+    function loadNextQuestion() {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < quizData.length) {
+            loadQuestion();
+        } else {
+            showFinalResults();
+        }
+    }
+
+    function showFinalResults() {
+        document.getElementById('quiz-window').style.display = 'none';
+        document.getElementById('results-window').style.display = 'block';
+        
+        document.getElementById('score-display').innerText = `${score} / ${quizData.length}`;
+        
+        const percentage = (score / quizData.length) * 100;
+        let commentary = "";
+        if (percentage === 100) commentary = "Exceptional performance! You have fully mastered this unit.";
+        else if (percentage >= 80) commentary = "Great job! You have a solid grasp of basic chemistry principles.";
+        else if (percentage >= 50) commentary = "Good effort. Review the specific feedback on your missed concepts below.";
+        else commentary = "Keep practicing. Read over the foundational explanations below and attempt the review again.";
+        
+        document.getElementById('score-commentary').innerText = commentary;
+        
+        const mistakesList = document.getElementById('mistakes-list');
+        mistakesList.innerHTML = '';
+        
+        if (userMistakes.length === 0) {
+            mistakesList.innerHTML = '<p style="color: #2b573a; font-weight: bold;">No mistakes made! Fantastic work.</p>';
+        } else {
+            userMistakes.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'mistake-item';
+                itemDiv.innerHTML = `
+                    <div class="mistake-q">${item.question}</div>
+                    <div style="margin: 3px 0;">❌ <strong>Your selection:</strong> ${item.yourChoice}</div>
+                    <div style="margin: 3px 0;">✅ <strong>Correct answer:</strong> ${item.correctChoice}</div>
+                    <div style="margin-top: 8px; font-size: 14px; color: #444444; font-style: italic;"><strong>Why?</strong> ${item.remediation}</div>
+                `;
+                mistakesList.appendChild(itemDiv);
+            });
+        }
+    }
+
+    // Initialize the quiz flow upon document completion
+    window.onload = loadQuestion;
 </script>
 
 </body>
